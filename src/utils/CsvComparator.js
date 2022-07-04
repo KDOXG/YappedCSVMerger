@@ -1,15 +1,9 @@
-import logo from './logo.svg';
-import './App.css';
-import {useRef, useState} from 'react';
-import fs from 'fs';
-//import CsvComparator from './utils/CsvComparator.js';
+const fs = require('fs');
 
-//const fs = require('fs');
-
-const CsvComparator = (originalFile, newModFile1, newModFile2) => {
-    const originalFileContent = fs.readFileSync(originalFile.name, {encoding:'utf8', flag:'r'})
-    const newModFile1Content = fs.readFileSync(newModFile1.name, {encoding:'utf8', flag:'r'})
-    const newModFile2Content = fs.readFileSync(newModFile2.name, {encoding:'utf8', flag:'r'})
+export default CsvComparator = (originalFile, newModFile1, newModFile2) => {
+    const originalFileContent = fs.readFileSync(originalFile.name, 'utf-8')
+    const newModFile1Content = fs.readFileSync(newModFile1.name, 'utf-8')
+    const newModFile2Content = fs.readFileSync(newModFile2.name, 'utf-8')
 
     const originalFileHead = originalFileContent.split(/\r?\n/)[0]
 
@@ -88,26 +82,3 @@ const CsvComparator = (originalFile, newModFile1, newModFile2) => {
     )
 
 };
-
-function App() {
-  const originalInput = useRef(null);
-  const mod1Input = useRef(null);
-  const mod2Input = useRef(null);
-//   const comparator = CsvComparator;
-  const onButtonClick = () => {
-    CsvComparator(originalInput.current, mod1Input.current, mod2Input.current)
-  };
-  return (
-    <div className="App">
-      <input ref={originalInput} type="file">
-      </input>
-      <input ref={mod1Input} type="file">
-      </input>
-      <input ref={mod2Input} type="file">
-      </input>
-      <button onClick={onButtonClick}>Focus no input</button>
-    </div>
-  );
-}
-
-export default App;
