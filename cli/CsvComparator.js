@@ -9,6 +9,8 @@ const CsvComparator = (originalFile, newModFile1, newModFile2) => {
 
     const diffLines = []
 
+    const outputFileContent = []
+
     const originalFileLines = originalFileContent.split(/\r?\n/).slice(1)
     const newModFile1Lines = newModFile1Content.split(/\r?\n/).slice(1)
     const newModFile2Lines = newModFile2Content.split(/\r?\n/).slice(1)
@@ -33,59 +35,96 @@ const CsvComparator = (originalFile, newModFile1, newModFile2) => {
 
     for (let line of originalFileLines) {
         originalFileHashmap = {...originalFileHashmap, [line.split(';')[0]] : line}
-        //originalFileHashmap.push({[line.split(';')[0]] : line})
     }
     for (let line of newModFile1Lines) {
         newModFile1Hashmap = {...newModFile1Hashmap, [line.split(';')[0]] : line}
-        //newModFile1Hashmap.push({[line.split(';')[0]] : line})
     }
     for (let line of newModFile2Lines) {
         newModFile2Hashmap = {...newModFile2Hashmap, [line.split(';')[0]] : line}
-        //newModFile2Hashmap.push({[line.split(';')[0]] : line})
     }
 
-    let outputFileContent = ""
-    outputFileContent.concat(originalFileHead,'\n')
+    // Object.keys(newModFile2Hashmap).forEach(key => 
+    //     newModFile1Hashmap[key] == null && 
+    //         outputFileContent.push(newModFile2Hashmap[key] + '\n')
+    // )
 
-    for (let line of Object.keys(newModFile1Hashmap)) {
+    let idFile2 = 1999999999
+    let lineFile2 = []
+    let itFile2 = 0
 
-        const foundValue = newModFile2Hashmap[line]
+    for (let key of Object.keys(newModFile2Hashmap)) {
+        if (newModFile1Hashmap[key] == null) {
+            lineFile2.push(
+                {
+                    id: key,
+                    content: newModFile2Hashmap[key]
+                }
+            )
+        }
+    }
+    if (lineFile2.length > 0)
+        idFile2 = lineFile2[itFile2].id
+
+    outputFileContent.push(originalFileHead + '\n')
+
+    for (let id of Object.keys(newModFile1Hashmap)) {
+
+        while (id > idFile2) {
+            outputFileContent.push(lineFile2[itFile2].content + '\n')
+            itFile2++
+            idFile2 = lineFile2.length > itFile2 ? lineFile2[itFile2].id : 1999999999
+        }
+
+        const foundValue = newModFile2Hashmap[id]
 
         //case 1: same id and same line in both mod files
         //case 3: id in file1 not found in file2
-        if (foundValue === newModFile1Hashmap[line] || foundValue == null) {
-            outputFileContent = outputFileContent.concat(newModFile1Hashmap[line],'\n')
+        if (foundValue === newModFile1Hashmap[id] || foundValue == null) {
+            outputFileContent.push(newModFile1Hashmap[id] + '\n')
             continue
         }
 
         //case 2: same id and conflicted line
         //case 2a: line from file1 is equal to original file,
         //  then concat line from file2
-        if (originalFileHashmap[line] === newModFile1Hashmap[line]) {
-            outputFileContent = outputFileContent.concat(foundValue,'\n')
+        if (originalFileHashmap[id] === newModFile1Hashmap[id]) {
+            outputFileContent.push(foundValue + '\n')
             continue
         }
         //case 2b: line from file2 is equal to original file,
         //  then concat line from file1
-        else if (originalFileHashmap[line] === foundValue) {
-            outputFileContent = outputFileContent.concat(newModFile1Hashmap[line],'\n')
+        if (originalFileHashmap[id] === foundValue) {
+            outputFileContent.push(newModFile1Hashmap[id] + '\n')
             continue
         }
         //case 2c: both lines are different from original file,
         //  then send for diff check on front
-        else {
 
-            //code
-        }
+        diffLines.push(
+            {
+                file: 0,
+                id: id,
+                content: newModFile1Hashmap[id]
+            }
+        )
+        diffLines.push(
+            {
+                file: 1,
+                id: id,
+                content: newModFile2Hashmap[id]
+            }
+        )
+
+        //code
 
     }
 
-    Object.keys(newModFile2Hashmap).forEach(
-        key => newModFile1Hashmap[key] == null && 
-            (outputFileContent = outputFileContent.concat(newModFile2Hashmap[key], '\n'))
-    )
+    while (itFile2 < lineFile2.length) {
+        outputFileContent.push(lineFile2[itFile2].content)
+        itFile2++
+    }
 
-    // outputFileContent.concat(
+    // outputFileContent.push(
     //     newModFile2Hashmap.filter(
     //         (value, key) => newModFile1Hashmap[key] == null
     //     ).map(
@@ -94,7 +133,8 @@ const CsvComparator = (originalFile, newModFile1, newModFile2) => {
     // )
     
 };
-let original = "C:\\FOR_WORK\\JS\\YappedCSVMerger\\py\\EquipParamWeapon.csv";
-let file1 = "C:\\FOR_WORK\\JS\\YappedCSVMerger\\py\\mymod.csv";
-let file2 = "C:/FOR_WORK/JS/YappedCSVMerger/py/new.csv";
+
+let original = "C:\\FOR_WORK\\JS\\YappedCSVMerger\\test\\EquipParamWeapon.csv";
+let file1 = "C:\\FOR_WORK\\JS\\YappedCSVMerger\\test\\mymod.csv";
+let file2 = "C:\\FOR_WORK\\JS\\YappedCSVMerger\\test\\new.csv";
 CsvComparator(original, file1, file2);
