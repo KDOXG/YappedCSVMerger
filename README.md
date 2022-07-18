@@ -1,4 +1,4 @@
-# (Incomplete) Yapped CSV Merger, done with React App
+# (Incomplete) Yapped CSV Merger, made with React App
 ## Check /src/utils/CsvComparator.js for the main function.
 
 # What it does?
